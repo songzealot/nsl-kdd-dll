@@ -41,6 +41,9 @@ void Test() {
 	int interface_cnt;
 	string name;
 
+	//통합 준비 작업
+	//interface_num, result_type 수정 필요
+	/*
 	for (;;) {
 		cout << "인터페이스 선택" << endl;
 		interface_cnt = list_interfaces();
@@ -91,7 +94,7 @@ void Test() {
 		}
 		break;
 	}
-
+	*/
 
 	try {
 		Config config;
