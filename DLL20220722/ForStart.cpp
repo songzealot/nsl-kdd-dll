@@ -28,6 +28,18 @@ int list_interfaces();
 //void invalid_option_value(const char* opt, const char* val, const char* progname);
 void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int result_type, string name);
 
+//테스트용
+//Test()에서 받은 string 값 저장
+string output;
+//값 전달 확인
+bool output_check = false;
+//output_check 상태 리턴
+bool output_status();
+//output_check 다시 false로 돌림
+void output_false();
+//~~~~~~
+
+
 void Test() {
 	// Register signal handler for termination
 	signal(SIGINT, signal_handler);
@@ -238,6 +250,8 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int r
 				fout << print_output << endl;
 			}
 			cout << print_output << endl;
+			output = print_output;
+			output_check = true;
 			delete cf;
 		}
 	}
@@ -259,7 +273,25 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int r
 			fout << print_output << endl;
 		}
 		cout << print_output << endl;
+		output = print_output;
+		output_check = true;
 		delete cf;
 	}
 	cout << cnt <<"개의 데이터 생성됨" << endl;
+}
+
+
+//output 관련 함수
+
+bool output_status() {
+	return output_check;
+}
+void output_false() {
+	output_check = false;
+}
+
+//output return
+const char* rt_output() {
+	const char* output_c = output.c_str();
+	return output_c;
 }
