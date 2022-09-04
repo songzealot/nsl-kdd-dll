@@ -206,9 +206,15 @@ int interfaces_num(const char * dev_name)
 
 	// 디바이스 이름 -> 인터페이스 인덱스
 	for (d = alldevs, i = 1; d; d = d->next, i++) {
-		if (dev_name == d->name) {
+		if (strcmp(dev_name, d->name)==0) {
+			//cout << "찾음" << endl;
 			return i;
 		}
+		/*
+		else {
+			cout << "못찾음" << endl;
+		}
+		*/
 	}
 
 	// Free the device list
