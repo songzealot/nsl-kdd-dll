@@ -22,11 +22,11 @@ static volatile bool temination_requested = false;
 
 void signal_handler(int signum);
 //void usage(const char* name);
-int list_interfaces();
+//int list_interfaces();
 //void parse_args(int argc, char** argv, Config* config);
 //void invalid_option(const char* opt, const char* progname);
 //void invalid_option_value(const char* opt, const char* val, const char* progname);
-void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int result_type, string name);
+void extract(Sniffer* sniffer, const Config* config, bool is_running_live);
 
 //테스트용
 //Test()에서 받은 string 값 저장
@@ -38,6 +38,8 @@ bool output_status();
 //output_check 다시 false로 돌림
 void output_false();
 //~~~~~~
+//인터페이스 인덱스 찾기
+int interfaces_num(char* dev_name);
 
 
 void Test() {
@@ -49,7 +51,6 @@ void Test() {
 #endif
 
 	int interface_num;
-	int result_type;
 	int interface_cnt;
 	string name;
 
@@ -110,6 +111,8 @@ void Test() {
 
 	try {
 		Config config;
+
+
 		config.set_interface_num(interface_num);
 		//cout << "1단계" << endl;
 
@@ -120,7 +123,7 @@ void Test() {
 			if (config.should_print_filename())
 				cout << "INTERFACE " << inum << endl;
 			Sniffer* sniffer = new Sniffer(inum, &config);
-			extract(sniffer, &config, true, result_type, name);
+			extract(sniffer, &config, true);
 			cout << "으악" << endl;
 		}
 		else {
@@ -151,6 +154,7 @@ void signal_handler(int signum)
 	temination_requested = true;
 }
 
+/*
 //void -> int
 int list_interfaces()
 {
@@ -181,8 +185,37 @@ int list_interfaces()
 
 	return i;
 }
+*/
 
-void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int result_type, string name)
+// 인터페이스 인덱스 찾기
+int interfaces_num(char * dev_name)
+{
+
+	pcap_if_t* alldevs;
+	pcap_if_t* d;
+	char errbuf[PCAP_ERRBUF_SIZE];
+	int i;
+
+	// Retrieve the device list
+	if (pcap_findalldevs(&alldevs, errbuf) == -1)
+	{
+		cerr << "Error in pcap_findalldevs: " << errbuf << endl;
+		exit(1);
+	}
+
+	// 디바이스 이름 -> 인터페이스 인덱스
+	for (d = alldevs, i = 1; d; d = d->next, i++) {
+		if (dev_name == d->name) {
+			return i;
+		}
+	}
+
+	// Free the device list
+	pcap_freealldevs(alldevs);
+	pcap_freealldevs(d);
+}
+
+void extract(Sniffer* sniffer, const Config* config, bool is_running_live)
 {
 	IpReassembler reasm;
 	ConversationReconstructor conv_reconstructor;
@@ -190,22 +223,6 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int r
 
 	bool has_more_traffic = true;
 	int cnt = 0;
-
-	//파일 출력
-	ofstream fout;
-	//이어쓰기
-	if (result_type == 21) {
-		string file_name = name;
-		file_name += ".txt";
-		fout.open(file_name, ios_base::app);
-	}
-	//덮어쓰기
-	else if (result_type == 22) {
-		string file_name = name;
-		file_name += ".txt";
-		fout.open(file_name);
-	}
-	
 
 	while (!temination_requested && (has_more_traffic || is_running_live)) {
 
@@ -249,10 +266,7 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int r
 			//cout << "3-1단계 " << cnt << endl;
 			//cf->print(config->should_print_extra_features());
 			string print_output = cf->print(config->should_print_extra_features());
-			if (result_type == 21 || result_type == 22) {
-				fout << print_output << endl;
-			}
-			cout << print_output << endl;
+			
 			delete cf;
 		}
 	}
@@ -270,10 +284,7 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live, int r
 		//cout << "3-2단계" << endl;
 		//cf->print(config->should_print_extra_features());
 		string print_output = cf->print(config->should_print_extra_features());
-		if (result_type == 21 || result_type == 22) {
-			fout << print_output << endl;
-		}
-		cout << print_output << endl;
+		
 		delete cf;
 	}
 	cout << cnt <<"개의 데이터 생성됨" << endl;
