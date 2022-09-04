@@ -39,10 +39,10 @@ bool output_status();
 void output_false();
 //~~~~~~
 //인터페이스 인덱스 찾기
-int interfaces_num(char* dev_name);
+int interfaces_num(const char* dev_name);
 
 
-void Test() {
+void Test(char* dev_name) {
 	// Register signal handler for termination
 	signal(SIGINT, signal_handler);
 	signal(SIGTERM, signal_handler);
@@ -112,6 +112,7 @@ void Test() {
 	try {
 		Config config;
 
+		interface_num = interfaces_num(dev_name);
 
 		config.set_interface_num(interface_num);
 		//cout << "1단계" << endl;
@@ -188,7 +189,7 @@ int list_interfaces()
 */
 
 // 인터페이스 인덱스 찾기
-int interfaces_num(char * dev_name)
+int interfaces_num(const char * dev_name)
 {
 
 	pcap_if_t* alldevs;
@@ -266,7 +267,8 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live)
 			//cout << "3-1단계 " << cnt << endl;
 			//cf->print(config->should_print_extra_features());
 			string print_output = cf->print(config->should_print_extra_features());
-			
+			output = print_output;
+			output_check = true;
 			delete cf;
 		}
 	}
@@ -284,7 +286,8 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live)
 		//cout << "3-2단계" << endl;
 		//cf->print(config->should_print_extra_features());
 		string print_output = cf->print(config->should_print_extra_features());
-		
+		output = print_output;
+		output_check = true;
 		delete cf;
 	}
 	cout << cnt <<"개의 데이터 생성됨" << endl;
