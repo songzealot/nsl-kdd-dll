@@ -272,7 +272,8 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live)
 
 			//cout << "3-1단계 " << cnt << endl;
 			//cf->print(config->should_print_extra_features());
-			string print_output = cf->print(config->should_print_extra_features());
+			//string print_output = cf->print(config->should_print_extra_features());
+			string print_output = cf->print(true);
 			output = print_output;
 			output_check = true;
 			delete cf;
@@ -291,7 +292,8 @@ void extract(Sniffer* sniffer, const Config* config, bool is_running_live)
 
 		//cout << "3-2단계" << endl;
 		//cf->print(config->should_print_extra_features());
-		string print_output = cf->print(config->should_print_extra_features());
+		//string print_output = cf->print(config->should_print_extra_features());
+		string print_output = cf->print(true);
 		output = print_output;
 		output_check = true;
 		delete cf;
